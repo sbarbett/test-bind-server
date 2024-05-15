@@ -87,7 +87,7 @@ echo "<html><body><h1>DDR Boot Camp Test</h1></body></html>" | sudo tee /var/www
 sudo ufw allow 53
 sudo ufw allow 'Nginx Full'
 sudo ufw allow OpenSSH
-sudo ufw enable
+yes | sudo ufw enable
 
 # Restart services
 echo "Restarting services..."
