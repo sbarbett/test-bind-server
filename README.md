@@ -1,6 +1,6 @@
 # test-bind-server
 
-Just a simple script that spins up a BIND and nginx server on a newly provisioned server. For testing purposes.
+Just a simple script that spins up a BIND and nginx server on a newly provisioned Ubuntu VM. For testing purposes.
 
 ## Usage
 
