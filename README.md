@@ -6,7 +6,7 @@ Just a simple script that spins up a BIND and nginx server on a newly provisione
 
 ```
 chmod +x setup.sh
-sudo ./setup.sh > setup.log 2>&1
+sudo ./setup.sh {{ip_address}} > setup.log 2>&1
 ```
 
 This will pipe the output into a log file, in case troubleshooting is necessary.
