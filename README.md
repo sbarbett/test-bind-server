@@ -2,7 +2,7 @@
 
 Just a simple script that spins up a BIND and nginx server on a newly provisioned Ubuntu VM. For testing purposes.
 
-## Usage
+## Bootstrap Usage
 
 Clone the repository to your environment.
 
@@ -38,3 +38,14 @@ curl http://localhost
 ### Security Note
 
 This script opens up ports and installs services and is _not_ inteaded to be run on any sort of production environment. This is for demos on VMs that are discarded after use.
+
+## Docker
+
+Alternatively, you can run BIND and nginx inside a container using a loopback address on your local machine. I've included a Dockerfile for this purpose. The Dockerfile will use the same `config.json` parameters, just set the `ip` to `127.0.0.1`.
+
+To build and run (from the test-bind-server directory where `Dockerfile` is located):
+
+```
+docker build -t test-bind-server .
+docker run -d -p 53:53 -p 53:53/udp -p 80:80 --name mytestbindserver test-bind-server
+```

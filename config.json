@@ -1,5 +1,5 @@
 {
-  "ip": "192.168.1.1",
+  "ip": "127.0.0.1",
   "domains": [
     "example1.com",
     "example2.net",
