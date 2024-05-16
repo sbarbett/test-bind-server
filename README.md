@@ -49,3 +49,7 @@ To build and run (from the test-bind-server directory where `Dockerfile` is loca
 docker build -t test-bind-server .
 docker run -d -p 53:53 -p 53:53/udp -p 80:80 --name mytestbindserver test-bind-server
 ```
+
+## License
+
+This project is licensed under the terms of the MIT license. See LICENSE.md for more details.
