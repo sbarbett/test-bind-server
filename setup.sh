@@ -1,50 +1,30 @@
 #!/bin/bash
 
-# Check if an IP address is passed as an argument
-if [ -z "$1" ]; then
-    echo "Usage: $0 <IP_ADDRESS>"
-    exit 1
-fi
-
-IP_ADDRESS=$1
-
 # Update package lists
 sudo apt-get update
 
-# Upgrade installed packages (optional, uncomment if needed)
-# sudo apt-get upgrade -y
-
-# Install BIND9 and necessary packages
-sudo apt-get install -y bind9 bind9utils bind9-doc
+# Install jq for JSON parsing and BIND9 and Nginx for server setup
+sudo apt-get install -y jq bind9 bind9utils bind9-doc nginx
 
 # Backup original BIND configuration files
 sudo cp /etc/bind/named.conf /etc/bind/named.conf.backup
 sudo cp /etc/bind/named.conf.local /etc/bind/named.conf.local.backup
 sudo cp /etc/bind/named.conf.options /etc/bind/named.conf.options.backup
 
+# Read configuration from JSON file
+IP_ADDRESS=$(jq -r '.ip' config.json)
+DOMAINS=$(jq -r '.domains[]' config.json)
+SPLASH_TEXT=$(jq -r '.splash_text' config.json)
+
 # Set up BIND configuration
 echo "Writing named.conf.local and named.conf.options..."
 sudo tee /etc/bind/named.conf.local > /dev/null <<EOF
-zone "example.com" {
+$(for domain in $DOMAINS; do
+echo "zone \"$domain\" {
     type master;
-    file "/etc/bind/zones/db.example.com";
-};
-zone "facebook.com" {
-    type master;
-    file "/etc/bind/zones/db.facebook.com";
-};
-zone "vercara.com" {
-    type master;
-    file "/etc/bind/zones/db.vercara.com";
-};
-zone "test.local" {
-    type master;
-    file "/etc/bind/zones/db.test.local";
-};
-zone "zxit183472.biz" {
-    type master;
-    file "/etc/bind/zones/db.zxit183472.biz";
-};
+    file \"/etc/bind/zones/db.$domain\";
+};"
+done)
 EOF
 
 sudo tee /etc/bind/named.conf.options > /dev/null <<EOF
@@ -62,7 +42,7 @@ sudo chown bind:bind /etc/bind/zones
 
 # Create zone files
 echo "Creating zone files..."
-for domain in example.com facebook.com vercara.com test.local zxit183472.biz; do
+for domain in $DOMAINS; do
     sudo tee /etc/bind/zones/db.$domain > /dev/null <<EOF
 \$TTL    604800
 @       IN      SOA     ns1.$domain. admin.$domain. (
@@ -79,9 +59,8 @@ www     IN      A       $IP_ADDRESS
 EOF
 done
 
-# Install Nginx and configure web page
-sudo apt-get install -y nginx
-echo "<html><body><h1>DDR Boot Camp Test</h1></body></html>" | sudo tee /var/www/html/index.html
+# Configure web page with custom splash text
+echo "<html><body><h1>$SPLASH_TEXT</h1></body></html>" | sudo tee /var/www/html/index.html
 
 # Configure firewall
 sudo ufw allow 53
@@ -95,4 +74,3 @@ sudo systemctl restart bind9
 sudo systemctl restart nginx
 
 echo "Setup completed."
-
