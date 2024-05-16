@@ -1,0 +1,11 @@
+{
+  "ip": "192.168.1.1",
+  "domains": [
+    "example1.com",
+    "example2.net",
+    "example3.org",
+    "example4.local",
+    "example5.biz"
+  ],
+  "splash_text": "Custom Splash Page"
+}
